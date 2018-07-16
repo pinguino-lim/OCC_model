@@ -1,0 +1,52 @@
+---
+title: "OCC_model"
+author: "Hyelim Park"
+date: '2018 7 16 '
+output:
+  html_document:
+    df_print: paged
+---
+# OBIS data
+```{r, warning=FALSE,message=FALSE, echo=FALSE}
+# R version 3.5.1 (2018-07-02) -- "Feather Spray"
+# Copyright (C) 2018 The R Foundation for Statistical Computing
+# Platform: x86_64-apple-darwin15.6.0 (64-bit)
+
+
+
+#install.packages("devtools")
+#devtools::install_github("iobis/robis")
+library(robis)
+
+data <- occurrence("Engraulis ringens ", fields = c("decimalLongitude", "decimalLatitude"))
+
+
+```
+# GBIF data (in spocc; 여긴 조금나와..)
+## Engraulis ringens 는 총 114개의 데이터중 34개만 2002년 이후이고 대부분이 2002년에 형성.
+## Theragra chalcogramma (Gadus chalcogrammus) 총 데이터 수 많게 하면 엄청 많아짐. 10000 일단 해둠. 시간걸림. 9689개가 년과 위치 정보 갖음. 그나마 할만한 데이터!!!
+```{r, warning=FALSE,message=FALSE, echo=FALSE}
+#install.packages("rgbif")
+#install.packages("mapr", dependencies = TRUE)
+
+library(rgbif)
+library(ggplot2)
+library(mapr)
+library("dismo")
+library(leaflet)
+library("spocc")
+library(raster)
+
+
+
+#head(name_lookup(query = 'Theragra chalcogramma', rank="species", return = 'data'))
+dat <- occ_search(scientificName = "Theragra chalcogramma", limit = 10000, return="data")
+dat_modi <- na.omit(dat[,c("name","taxonKey","decimalLongitude","decimalLatitude","year","month")])
+
+hist((dat_modi$year)[dat_modi$year >= 2002])
+# dat <- occ(query = 'Theragra chalcogramma', from = c('gbif','obis'), has_coords = TRUE, limit = 300)
+map_leaflet(dat_modi,"decimalLongitude","decimalLatitude")
+
+
+
+```
